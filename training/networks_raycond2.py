@@ -20,11 +20,10 @@ from torch_utils.ops import upfirdn2d
 from torch_utils.ops import bias_act
 from torch_utils.ops import fma
 
-from training.plucker import (
-    plucker_embedding,
-    two_plane_embedding,
-    origin_dir_embedding,
-)
+from training.plucker import plucker_embedding
+    
+
+
 
 # ----------------------------------------------------------------------------
 
@@ -529,13 +528,9 @@ class SynthesisBlock(torch.nn.Module):
         self.register_buffer("resample_filter", upfirdn2d.setup_filter(resample_filter))
         self.num_conv = 0
         self.num_torgb = 0
-        if embedding == "twoplane":
-            self.embedding = two_plane_embedding
-        elif embedding == "plucker":
-            self.embedding = plucker_embedding
-        elif embedding == "origin_dir":
-            self.embedding = origin_dir_embedding
 
+        self.embedding = plucker_embedding
+      
         self.ray_cond = True  # resolution >= 128
         if self.ray_cond:
             intermediate_channels = out_channels + 6

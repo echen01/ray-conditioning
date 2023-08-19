@@ -169,13 +169,10 @@ def parse_comma_separated_list(s):
         [
             "stylegan3-t",
             "stylegan3-r",
-            "stylegan2",
-            "cam-field",
-            "cam-field-distillation",
-            "ray-cond",
-            "ray-cond-3",
-            "ray-cond-3r",
-            "todor2",
+            "stylegan2",                        
+            "raycond2",
+            "raycond3-t",
+            "raycond3-r",            
         ]
     ),
     required=True,
@@ -407,42 +404,22 @@ def main(**kwargs):
     c.G_kwargs = dnnlib.EasyDict(
         class_name=None, z_dim=512, w_dim=512, mapping_kwargs=dnnlib.EasyDict()
     )
-    if (
-        opts.cfg == "ray-cond"
-        or opts.cfg == "ray-cond-3"
-        or opts.cfg == "ray-cond-3r"
-        or opts.cfg == "todor2"
-    ):
-        c.D_kwargs = dnnlib.EasyDict(
-            # class_name="training.networks_ray_discriminator.RayDiscriminator",
-            class_name="training.networks_stylegan2.Discriminator",
-            block_kwargs=dnnlib.EasyDict(),
-            mapping_kwargs=dnnlib.EasyDict(),
-            epilogue_kwargs=dnnlib.EasyDict(),
-        )
-    else:
-        c.D_kwargs = dnnlib.EasyDict(
-            class_name="training.networks_stylegan2.Discriminator",
-            block_kwargs=dnnlib.EasyDict(),
-            mapping_kwargs=dnnlib.EasyDict(),
-            epilogue_kwargs=dnnlib.EasyDict(),
-        )
+    c.D_kwargs = dnnlib.EasyDict(
+        class_name="training.networks_stylegan2.Discriminator",
+        block_kwargs=dnnlib.EasyDict(),
+        mapping_kwargs=dnnlib.EasyDict(),
+        epilogue_kwargs=dnnlib.EasyDict(),
+    )
     c.G_opt_kwargs = dnnlib.EasyDict(
         class_name="torch.optim.Adam", betas=[0, 0.99], eps=1e-8
     )
     c.D_opt_kwargs = dnnlib.EasyDict(
         class_name="torch.optim.Adam", betas=[0, 0.99], eps=1e-8
     )
-    if opts.cfg == "cam-field-distillation":
-        c.loss_kwargs = dnnlib.EasyDict(
-            class_name="training.distillation_loss.StyleGAN2Loss",
-            parent_model="/share/phoenix/nfs04/S7/emc348/nerf/eg3d/shapenetcars128-64.pkl",
-        )
-    elif (
-        opts.cfg == "ray-cond"
-        or opts.cfg == "ray-cond-3"
-        or opts.cfg == "ray-cond-3r"
-        or opts.cfg == "todor2"
+    if (
+        opts.cfg == "raycond2"
+        or opts.cfg == "raycond3-t"
+        or opts.cfg == "raycond3-r"        
     ):
         c.loss_kwargs = dnnlib.EasyDict(class_name="training.ray_loss.StyleGAN2Loss")
     else:
@@ -469,8 +446,7 @@ def main(**kwargs):
             8
             if (
                 opts.cfg == "stylegan2"
-                or opts.cfg == "ray-cond"
-                or opts.cfg == "todor2"
+                or opts.cfg == "raycond2"
             )
             else 2
         )
@@ -485,10 +461,7 @@ def main(**kwargs):
             0.002
             if (
                 opts.cfg == "stylegan2"
-                or opts.cfg == "cam-field"
-                or opts.cfg == "cam-field-distillation"
-                or opts.cfg == "ray-cond"
-                or opts.cfg == "todor2"
+                or opts.cfg == "raycond2"                
             )
             else 0.0025
         )
@@ -529,37 +502,23 @@ def main(**kwargs):
         c.G_reg_interval = 4  # Enable lazy regularization for G.
         c.G_kwargs.fused_modconv_default = "inference_only"  # Speed up training by using regular convolutions instead of grouped convolutions.
         c.loss_kwargs.pl_no_weight_grad = True  # Speed up path length regularization by skipping gradient computation wrt. conv2d weights.
-    elif opts.cfg == "ray-cond":
-        c.G_kwargs.class_name = "training.networks_ray_embedding.Generator"
+    elif opts.cfg == "raycond2":
+        c.G_kwargs.class_name = "training.networks_raycond2.Generator"
         c.loss_kwargs.style_mixing_prob = 0.9  # Enable style mixing regularization.
         c.loss_kwargs.pl_weight = 2  # Enable path length regularization.
         c.G_reg_interval = 4  # Enable lazy regularization for G.
         c.G_kwargs.fused_modconv_default = "inference_only"  # Speed up training by using regular convolutions instead of grouped convolutions.
-        c.loss_kwargs.pl_no_weight_grad = True  # Speed up path length regularization by skipping gradient computation wrt. conv2d weights.
-    elif opts.cfg == "todor2":
-        c.G_kwargs.class_name = "training.networks_ray_todor.Generator"
-        c.loss_kwargs.style_mixing_prob = 0.9  # Enable style mixing regularization.
-        c.loss_kwargs.pl_weight = 2  # Enable path length regularization.
-        c.G_reg_interval = 4  # Enable lazy regularization for G.
-        c.G_kwargs.fused_modconv_default = "inference_only"  # Speed up training by using regular convolutions instead of grouped convolutions.
-        c.loss_kwargs.pl_no_weight_grad = True  # Speed up path length regularization by skipping gradient computation wrt. conv2d weights.
-    elif opts.cfg == "cam-field" or opts.cfg == "cam-field-distillation":
-        c.G_kwargs.class_name = "training.networks_cam_field.Generator"
-        c.loss_kwargs.style_mixing_prob = 0.9  # Enable style mixing regularization.
-        c.loss_kwargs.pl_weight = 2  # Enable path length regularization.
-        c.G_reg_interval = 4  # Enable lazy regularization for G.
-        c.G_kwargs.fused_modconv_default = "inference_only"  # Speed up training by using regular convolutions instead of grouped convolutions.
-        c.loss_kwargs.pl_no_weight_grad = True  # Speed up path length regularization by skipping gradient computation wrt. conv2d weights.
-    elif opts.cfg == "ray-cond-3":
-        c.G_kwargs.class_name = "training.networks_stylegan3_ray.Generator"
+        c.loss_kwargs.pl_no_weight_grad = True  # Speed up path length regularization by skipping gradient computation wrt. conv2d weights.    
+    elif opts.cfg == "raycond3-t":
+        c.G_kwargs.class_name = "training.networks_raycond3.Generator"
         c.G_kwargs.magnitude_ema_beta = 0.5 ** (c.batch_size / (20 * 1e3))
     else:
-        if opts.cfg == "ray-cond-3r":
-            c.G_kwargs.class_name = "training.networks_stylegan3_ray.Generator"
+        if opts.cfg == "raycond3-r":
+            c.G_kwargs.class_name = "training.networks_raycond3.Generator"
         else:
             c.G_kwargs.class_name = "training.networks_stylegan3.Generator"
         c.G_kwargs.magnitude_ema_beta = 0.5 ** (c.batch_size / (20 * 1e3))
-        if opts.cfg == "stylegan3-r" or opts.cfg == "ray-cond-3r":
+        if opts.cfg == "stylegan3-r" or opts.cfg == "raycond3-r":
             c.G_kwargs.conv_kernel = 1  # Use 1x1 convolutions.
             c.G_kwargs.channel_base *= 2  # Double the number of feature maps.
             c.G_kwargs.channel_max *= 2
