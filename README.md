@@ -22,21 +22,24 @@ You can use pre-trained networks in your own Python code as follows:
 with open('ffhq-raycond2-512.pkl', 'rb') as f:
     G = pickle.load(f)['G_ema'].cuda()  # torch.nn.Module
 z = torch.randn([1, G.z_dim]).cuda()    # latent codes
-c = torch.cat([c2w.view(1, -1), intrinsics.view(1, -1)], dim=-1)                    # camera parameters
+c = torch.cat([c2w.view(1, -1), intrinsics.view(1, -1)], dim=-1) # camera parameters
 img = G(z, c)                           # NCHW, float32, dynamic range [-1, +1], no truncation
 ```
 
-We also provide visualization notebooks in [`notebooks`](./notebooks/).
+We also provide visualization notebooks.  There is one for each dataset.
+- [`FFHQ`](./notebooks/FFHQ.ipynb)
+- [`AFHQ`](./notebooks/AFHQ.ipynb)
+- [`ShapeNet Cars`](./notebooks/Cars.ipynb)
 
 
 
 ## Preparing datasets
 
-Datasets can be prepared using the [`dataset_preprocessing`](https://github.com/NVlabs/eg3d/tree/main/dataset_preprocessing) files from EG3D. The dataset requires camera poses and intrinsics for every image. 
+Datasets are prepared with the [`dataset_preprocessing`](https://github.com/NVlabs/eg3d/tree/main/dataset_preprocessing) scripts from EG3D. The dataset requires camera poses and intrinsics for every image. 
 
 ## Training
 
-You can train new networks using `train.py`. The training parameters are exactly the same as those of StyleGAN3. Examples of training scripts are stored in the [`slurm_scripts`](./slurm_scripts/) folder. Configurations are provided for both StyleGAN2 and StyleGAN3, and are labeled as:
+The training script lies in [`train.py`](./train.py). The training parameters are exactly the same as those of StyleGAN3. Examples of training scripts are stored in the [`slurm_scripts`](./slurm_scripts/) folder. Configurations are provided for both StyleGAN2 and StyleGAN3, and are labeled as:
 - `raycond2`
 - `raycond3-t`
 - `raycond3-r`
