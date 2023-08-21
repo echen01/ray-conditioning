@@ -18,11 +18,11 @@ This repo is built on top of [stylegan3](https://github.com/NVlabs/stylegan3), a
 
 You can use pre-trained networks in your own Python code as follows:
 
-```.python
+```python
 with open('ffhq-raycond2-512.pkl', 'rb') as f:
     G = pickle.load(f)['G_ema'].cuda()  # torch.nn.Module
 z = torch.randn([1, G.z_dim]).cuda()    # latent codes
-c = torch.cat([c2w.view(1, -1), intrinsics.view(1, -1)], dim=-1)                                # camera parameters
+c = torch.cat([c2w.view(1, -1), intrinsics.view(1, -1)], dim=-1)                    # camera parameters
 img = G(z, c)                           # NCHW, float32, dynamic range [-1, +1], no truncation
 ```
 
