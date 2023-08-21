@@ -15,4 +15,4 @@
 # e.g. echo "hello world!"
 # better to use absolute path
 
-python /share/phoenix/nfs04/S7/emc348/ray-conditioning/train.py --outdir=/share/phoenix/nfs04/S7/emc348/stylegan3/training-runs --data=/share/phoenix/nfs04/S7/emc348/nerf/eg3d/processed_afhq.zip --cfg=ray-cond --gpus=2 --batch=32 --gamma=0.5 --snap=40 --cond=1 --aug=noaug --resume=/share/phoenix/nfs04/S7/emc348/nerf/eg3d/afhqcat.pkl
+python /share/phoenix/nfs04/S7/emc348/ray-conditioning/train.py --outdir=/share/phoenix/nfs04/S7/emc348/stylegan3/training-runs --data=/share/phoenix/nfs04/S7/emc348/nerf/eg3d/processed_afhq.zip --cfg=raycond2 --gpus=2 --batch=32 --gamma=2.5 --snap=40 --cond=1 --aug=noaug --resume=/share/phoenix/nfs04/S7/emc348/nerf/eg3d/afhqcat.pkl

@@ -86,7 +86,7 @@ def open_image_folder(source_dir, *, max_images: Optional[int]):
         for idx, fname in enumerate(input_images):
             arch_fname = os.path.relpath(fname, source_dir)
             arch_fname = arch_fname.replace('\\', '/')
-            img = np.array(PIL.Image.open(fname))
+            img = np.array(PIL.Image.open(fname).convert("RGB"))
             yield dict(img=img, label=labels.get(arch_fname))
             if idx >= max_idx-1:
                 break
