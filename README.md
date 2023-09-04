@@ -22,6 +22,8 @@ You can use pre-trained networks in your own Python code as follows:
 with open('ffhq-raycond2-512.pkl', 'rb') as f:
     G = pickle.load(f)['G_ema'].cuda()  # torch.nn.Module
 z = torch.randn([1, G.z_dim]).cuda()    # latent codes
+c2w # [1, 4, 4] sized Tensor
+intrinsics #[1, 3, 3] sized Tensor
 c = torch.cat([c2w.view(1, -1), intrinsics.view(1, -1)], dim=-1) # camera parameters
 img = G(z, c)                           # NCHW, float32, dynamic range [-1, +1], no truncation
 ```
@@ -30,6 +32,10 @@ We also provide visualization notebooks.  There is one for each dataset.
 - [`FFHQ`](./notebooks/FFHQ.ipynb)
 - [`AFHQ`](./notebooks/AFHQ.ipynb)
 - [`ShapeNet Cars`](./notebooks/Cars.ipynb)
+
+
+### Pretrained Networks
+You can download pretrained networks from here: [](), and put them in the  [`checkpoints`](./checkpoints/)` folder.
 
 
 
@@ -43,6 +49,11 @@ The training script lies in [`train.py`](./train.py). The training parameters ar
 - `raycond2`
 - `raycond3-t`
 - `raycond3-r`
+
+Here is an example training command for FFHQ:
+```
+python train.py --outdir=training-runs --data=/path/to/eg3d-ffhq.zip --cfg=raycond2 --gpus=2 --batch=32 --gamma=1 --snap=20 --cond=1 --aug=noaug --resume=checkpoints/stylegan2-ffhq-512x512.pkl
+```
 
 
 ## Citation

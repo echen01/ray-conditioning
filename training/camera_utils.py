@@ -161,32 +161,59 @@ class UniformCameraPoseSampler:
 
 class UniformBlenderPoseSampler:
     """
-    Samples a camera pose facing the origin on a sphere.
-    Maps a sample from [0, 1] x [0, 1] to the sphere.
+    Samples a camera pose facing the origin on a sphere 
     """
 
     @staticmethod
-    def sample(horizontal_mean, vertical_mean, horizontal_stddev=0, vertical_stddev=0,radius=1, batch_size=1, device="cpu"):
-        h = (
-            torch.rand((batch_size, 1), device=device) * 2 - 1
-        ) * horizontal_stddev + horizontal_mean
-        v = (
-            torch.rand((batch_size, 1), device=device) * 2 - 1
-        ) * vertical_stddev + vertical_mean
-        v = torch.clamp(v, 1e-5, math.pi - 1e-5)
+    def sample(radius=1, batch_size=1, device='cpu'):
+        h = torch.rand((batch_size, 1), device=device)  
+        v = torch.rand((batch_size, 1), device=device)
 
-        theta = h
-        v = v / math.pi
-        phi = torch.arccos(1 - 2 * v)
+        theta = 2 * math.pi * h
+        phi = torch.arccos(2*v - 1)
 
         camera_origins = torch.zeros((batch_size, 3), device=device)
 
-        camera_origins[:, 0:1] = radius * torch.sin(phi) * torch.cos(math.pi - theta)
-        camera_origins[:, 2:3] = radius * torch.sin(phi) * torch.sin(math.pi - theta)
-        camera_origins[:, 1:2] = radius * torch.cos(phi)
+        camera_origins[:, 0:1] = radius*torch.sin(phi) * torch.cos(theta)
+        camera_origins[:, 1:2] = radius*torch.sin(phi) * torch.sin(theta)
+        camera_origins[:, 2:3] = radius*torch.cos(phi)
 
         forward_vectors = math_utils.normalize_vecs(-camera_origins)
-        return create_blender_cam2world_matrix(forward_vectors, camera_origins)
+        return create_blender_cam2world_matrix(forward_vectors, camera_origins) 
+    
+    @staticmethod
+    def sample_upper_hemi(radius=1, batch_size=1, device='cpu'):
+        h = torch.rand((batch_size, 1), device=device)  
+        v = torch.rand((batch_size, 1), device=device)
+
+        theta = 2 * math.pi * h
+        phi = torch.arccos(v) +0.5
+
+        camera_origins = torch.zeros((batch_size, 3), device=device)
+
+        camera_origins[:, 0:1] = radius*torch.sin(phi) * torch.cos(theta)
+        camera_origins[:, 1:2] = radius*torch.sin(phi) * torch.sin(theta)
+        camera_origins[:, 2:3] = radius*torch.cos(phi)
+
+        forward_vectors = math_utils.normalize_vecs(-camera_origins)
+        return create_blender_cam2world_matrix(forward_vectors, camera_origins) 
+    
+    @staticmethod
+    def sample_hv(h_val, v_val, radius=1, batch_size=1, device='cpu'):
+        h = torch.full((batch_size, 1), h_val, device=device)  
+        v = torch.full((batch_size, 1), v_val, device=device)
+
+        theta = 2 * math.pi * h
+        phi = torch.arccos(2*v - 1)
+
+        camera_origins = torch.zeros((batch_size, 3), device=device)
+
+        camera_origins[:, 0:1] = radius*torch.sin(phi) * torch.cos(theta)
+        camera_origins[:, 1:2] = radius*torch.sin(phi) * torch.sin(theta)
+        camera_origins[:, 2:3] = radius*torch.cos(phi)
+
+        forward_vectors = math_utils.normalize_vecs(-camera_origins)
+        return create_blender_cam2world_matrix(forward_vectors, camera_origins) 
 
 def create_blender_cam2world_matrix(forward_vector, origin):
     """
