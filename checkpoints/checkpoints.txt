@@ -1,0 +1,12 @@
+Put the checkpoints here.
+
+File List:
+
+raycond2-afhqcat-512x512.pkl
+raycond2-ffhq-512x512.pkl
+raycond2-ffhq-1024x1024.pkl
+raycond2-cars-128x128.pkl
+raycond3-t-cars-128x128.pkl
+stylegan2-afhqcat-512x512.pkl
+stylegan2-ffhq-512x512.pkl
+stylegan2-ffhq-1024x1024.pkl
