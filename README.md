@@ -35,7 +35,7 @@ We also provide visualization notebooks.  There is one for each dataset.
 
 
 ### Pretrained Networks
-You can download pretrained networks from here: [](), and put them in the [`checkpoints`](./checkpoints/) folder.
+You can download pretrained networks from here: [`RayConditioningCheckpoints.zip`](https://cornell.app.box.com/s/ypfrho557jfvqexcgcs5n5dvh26bmoxz), and put them in the [`checkpoints`](./checkpoints/) folder.
 
 
 
