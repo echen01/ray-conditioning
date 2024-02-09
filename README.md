@@ -59,10 +59,12 @@ python train.py --outdir=training-runs --data=/path/to/eg3d-ffhq.zip --cfg=rayco
 ## Citation
 
 ```
-@inproceedings{chen2023:ray-conditioning,
-  author = {Eric Ming Chen and Sidhanth Holalkere and Ruyu Yan and Kai Zhang and Abe Davis},
-  title = {Ray Conditioning: Trading Photo-realism for Photo-Consistency in Multi-view Image Generation},
-  booktitle = {ICCV},
-  year = {2023}
+@InProceedings{chen2023:ray-conditioning,
+    author    = {Chen, Eric Ming and Holalkere, Sidhanth and Yan, Ruyu and Zhang, Kai and Davis, Abe},
+    title     = {Ray Conditioning: Trading Photo-consistency for Photo-realism in Multi-view Image Generation},
+    booktitle = {Proceedings of the IEEE/CVF International Conference on Computer Vision (ICCV)},
+    month     = {October},
+    year      = {2023},
+    pages     = {23242-23251}
 }
 ```
